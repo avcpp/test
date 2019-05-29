@@ -33,6 +33,8 @@
 
 // Boost
 #include <boost/config.hpp>
+#include <boost/thread/lock_guard.hpp>
+#include <boost/thread/mutex.hpp>
 
 // STL
 #include <fstream>
@@ -289,6 +291,8 @@ format_report( OutStream& os, assertion_result const& pr, unit_test::lazy_ostrea
     }
 }
 
+boost::mutex test_tools_mutex;
+
 //____________________________________________________________________________//
 
 bool
@@ -300,6 +304,7 @@ report_assertion( assertion_result const&   ar,
                   check_type                ct,
                   std::size_t               num_args, ... )
 {
+    boost::lock_guard<boost::mutex> lock(test_tools_mutex);
     using namespace unit_test;
 
     if( !framework::test_in_progress() ) {
